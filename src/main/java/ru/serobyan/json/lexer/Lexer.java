@@ -18,7 +18,7 @@ public class Lexer {
         return lexer;
     }
 
-    public Iterable<Token> tokenize() throws IOException {
+    public Iterable<Token> lex() throws IOException {
         var reader = new InputStreamReader(input, StandardCharsets.UTF_8);
         int intCh;
         while ((intCh = reader.read()) != -1) {
