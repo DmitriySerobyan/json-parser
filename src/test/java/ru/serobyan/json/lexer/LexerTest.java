@@ -1,6 +1,8 @@
 package ru.serobyan.json.lexer;
 
 import lombok.SneakyThrows;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import ru.serobyan.json.lexer.token.*;
 
@@ -18,8 +20,8 @@ class LexerTest {
         var json = LexerTest.class.getClassLoader().getResourceAsStream("test.json");
         var tokenIterator = Lexer.of(json).lex();
         var tokens = new ArrayList<Token>();
-        for (var t : tokenIterator) {
-            tokens.add(t);
+        while (tokenIterator.hasNext()) {
+            tokens.add(tokenIterator.next());
         }
         var expected = List.of(
             Tokens.leftBrace(),
@@ -30,7 +32,7 @@ class LexerTest {
             Tokens.value("v5"), Tokens.colon(), Tokens.leftSquare(), Tokens.value(2), Tokens.rightSquare(),
             Tokens.rightBrace()
         );
-        assertEquals(expected, tokens);
+        MatcherAssert.assertThat(tokens, Matchers.contains(expected.toArray()));
     }
 
 }
