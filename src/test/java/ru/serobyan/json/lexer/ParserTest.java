@@ -20,11 +20,13 @@ class ParserTest {
             Tokens.leftBrace(),
             Tokens.value("v1"), Tokens.colon(), Tokens.value(1), Tokens.comma(),
             Tokens.value("v2"), Tokens.colon(), Tokens.value("test"),
+            Tokens.value("v3"), Tokens.colon(), Tokens.leftSquare(), Tokens.value(1), Tokens.rightSquare(),
             Tokens.rightBrace()
         );
         var expected = Map.of(
             "v1", 1,
-            "v2", "test"
+            "v2", "test",
+            "v3", List.of(1)
         );
         var parser = Parser.of(tokens.listIterator());
         var result = parser.parse();
