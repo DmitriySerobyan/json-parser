@@ -25,7 +25,7 @@ class LexerTest {
         }
         var expected = List.of(
             Tokens.leftBrace(),
-            Tokens.value("v1"), Tokens.colon(), Tokens.value(1), Tokens.comma(),
+            Tokens.value("v1"), Tokens.colon(), Tokens.value(100), Tokens.comma(),
             Tokens.value("v2"), Tokens.colon(), Tokens.value("test"), Tokens.comma(),
             Tokens.value("v3"), Tokens.colon(), Tokens.value(2.0), Tokens.comma(),
             Tokens.value("v4"), Tokens.colon(), Tokens.value(true), Tokens.comma(),
