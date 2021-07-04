@@ -26,7 +26,7 @@ class ParserTest {
             "v1", 1,
             "v2", "test"
         );
-        var parser = Parser.of(tokens);
+        var parser = Parser.of(tokens.listIterator());
         var result = parser.parse();
         MatcherAssert.assertThat(result, Matchers.equalTo(expected));
     }
@@ -44,7 +44,7 @@ class ParserTest {
             1,
             2
         );
-        var parser = Parser.of(tokens);
+        var parser = Parser.of(tokens.listIterator());
         var result = parser.parse();
         MatcherAssert.assertThat(result, Matchers.equalTo(expected));
     }
@@ -56,7 +56,7 @@ class ParserTest {
             Tokens.value(1)
         );
         var expected = 1;
-        var parser = Parser.of(tokens);
+        var parser = Parser.of(tokens.listIterator());
         var result = parser.parse();
         MatcherAssert.assertThat(result, Matchers.equalTo(expected));
     }

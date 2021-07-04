@@ -6,25 +6,16 @@ import java.util.*;
 
 public class Parser {
 
-    private List<Token> tokens;
-    private int position = 0;
+    private Iterator<Token> tokens;
 
-    public static Parser of(Iterator<Token> tokenIterator) {
-        var tokens = new ArrayList<Token>();
-        while (tokenIterator.hasNext()) {
-            tokens.add(tokenIterator.next());
-        }
-        return of(tokens);
-    }
-
-    public static Parser of(List<Token> tokens) {
+    public static Parser of(Iterator<Token> tokens) {
         var parser = new Parser();
         parser.tokens = tokens;
         return parser;
     }
 
     public Object parse() {
-        var firstToken = tokens.get(0);
+        var firstToken = tokens.next();
         if (firstToken instanceof LeftSquare) {
             return parseArray();
         }
@@ -32,16 +23,15 @@ public class Parser {
             return parseObject();
         }
         if (firstToken instanceof Primitive) {
-            return parsePrimitive();
+            return parsePrimitive(firstToken);
         }
         throw new RuntimeException();
     }
 
     List<Object> parseArray() {
-        position++;
         var result = new ArrayList<>();
-        while (position < tokens.size()) {
-            var token = tokens.get(position);
+        while (tokens.hasNext()) {
+            var token = tokens.next();
             if (token instanceof RightSquare) {
                 return result;
             }
@@ -54,17 +44,15 @@ public class Parser {
             if (token instanceof LeftBrace) {
                 return parseArray();
             }
-            position++;
         }
         throw new RuntimeException();
     }
 
     Map<String, Object> parseObject() {
-        position++;
         var result = new HashMap<String, Object>();
         String key = null;
-        while (position < tokens.size()) {
-            var token = tokens.get(position);
+        while (tokens.hasNext()) {
+            var token = tokens.next();
             if (token instanceof RightBrace) {
                 return result;
             }
@@ -82,13 +70,11 @@ public class Parser {
             if (token instanceof LeftSquare) {
                 result.put(key, parseArray());
             }
-            position++;
         }
         throw new RuntimeException();
     }
 
-    Object parsePrimitive() {
-        var token = tokens.get(position);
+    Object parsePrimitive(Token token) {
         return ((Primitive) token).getValue();
     }
 
