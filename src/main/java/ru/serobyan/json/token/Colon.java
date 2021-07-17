@@ -1,4 +1,4 @@
-package ru.serobyan.json.lexer.token;
+package ru.serobyan.json.token;
 
 import lombok.Value;
 

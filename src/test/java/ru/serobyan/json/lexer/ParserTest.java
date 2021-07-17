@@ -4,8 +4,8 @@ import lombok.SneakyThrows;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import ru.serobyan.json.lexer.token.Token;
-import ru.serobyan.json.lexer.token.Tokens;
+import ru.serobyan.json.token.Token;
+import ru.serobyan.json.token.Tokens;
 import ru.serobyan.json.parser.Parser;
 
 import java.util.List;

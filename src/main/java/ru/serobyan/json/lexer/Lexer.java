@@ -1,24 +1,22 @@
 package ru.serobyan.json.lexer;
 
 import lombok.SneakyThrows;
-import ru.serobyan.json.lexer.token.Token;
-import ru.serobyan.json.lexer.token.Tokens;
+import ru.serobyan.json.token.Token;
+import ru.serobyan.json.token.Tokens;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 
 import static java.lang.Character.*;
 
 public class Lexer {
 
     private InputStreamReader reader;
-    private Deque<String> nexts = new LinkedList<>();
+    private final Deque<String> nexts = new LinkedList<>();
 
     public static Lexer of(InputStream input) {
         var lexer = new Lexer();

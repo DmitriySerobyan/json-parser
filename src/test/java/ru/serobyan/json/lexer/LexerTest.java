@@ -4,9 +4,8 @@ import lombok.SneakyThrows;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import ru.serobyan.json.lexer.token.*;
+import ru.serobyan.json.token.*;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

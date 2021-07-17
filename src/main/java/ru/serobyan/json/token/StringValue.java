@@ -1,9 +1,7 @@
-package ru.serobyan.json.lexer.token;
+package ru.serobyan.json.token;
 
-import lombok.Value;
-
-@Value
-public class StringValue implements Primitive {
+@lombok.Value
+public class StringValue implements Value {
 
     String value;
 

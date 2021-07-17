@@ -1,11 +1,9 @@
-package ru.serobyan.json.lexer.token;
+package ru.serobyan.json.token;
 
-import lombok.Value;
+@lombok.Value
+public class IntValue implements Value {
 
-@Value
-public class BoolValue implements Primitive {
-
-    boolean value;
+    int value;
 
     @Override
     public Object getValue() {

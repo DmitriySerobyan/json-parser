@@ -1,6 +1,6 @@
 package ru.serobyan.json.parser;
 
-import ru.serobyan.json.lexer.token.*;
+import ru.serobyan.json.token.*;
 
 import java.util.*;
 
@@ -22,7 +22,7 @@ public class Parser {
         if (firstToken instanceof LeftBrace) {
             return parseObject();
         }
-        if (firstToken instanceof Primitive) {
+        if (firstToken instanceof Value) {
             return parsePrimitive(firstToken);
         }
         throw new RuntimeException();
@@ -35,8 +35,8 @@ public class Parser {
             if (token instanceof RightSquare) {
                 return result;
             }
-            if (token instanceof Primitive) {
-                result.add(((Primitive) token).getValue());
+            if (token instanceof Value) {
+                result.add(((Value) token).getValue());
             }
             if (token instanceof LeftBrace) {
                 result.add(parseObject());
@@ -56,11 +56,11 @@ public class Parser {
             if (token instanceof RightBrace) {
                 return result;
             }
-            if (token instanceof Primitive) {
+            if (token instanceof Value) {
                 if (key == null) {
-                    key = (String) ((Primitive) token).getValue();
+                    key = (String) ((Value) token).getValue();
                 } else {
-                    result.put(key, ((Primitive) token).getValue());
+                    result.put(key, ((Value) token).getValue());
                     key = null;
                 }
             }
@@ -75,7 +75,7 @@ public class Parser {
     }
 
     Object parsePrimitive(Token token) {
-        return ((Primitive) token).getValue();
+        return ((Value) token).getValue();
     }
 
 }
