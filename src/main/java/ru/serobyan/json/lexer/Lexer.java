@@ -15,20 +15,14 @@ import static java.lang.Character.*;;
 
 public class Lexer {
 
-    private final Deque<Token> nextTokens = new LinkedList<>();
-    private final InputStreamReader reader;
-
-    private Lexer(InputStreamReader reader) {
-        this.reader = reader;
+    public Iterator<Token> lex(InputStream input) {
+        return lex(new InputStreamReader(input, StandardCharsets.UTF_8));
     }
 
-    public static Lexer of(InputStream input) {
-        return new Lexer(new InputStreamReader(input, StandardCharsets.UTF_8));
-    }
-
-    public Iterator<Token> lex() {
+    public Iterator<Token> lex(InputStreamReader reader) {
         return new Iterator<>() {
 
+            private final Deque<Token> nextTokens = new LinkedList<>();
             private int position = -1;
             private boolean isDone = false;
 
