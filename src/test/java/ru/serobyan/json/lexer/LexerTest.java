@@ -29,7 +29,8 @@ class LexerTest {
             Tokens.value("v3"), Tokens.colon(), Tokens.value(2.0), Tokens.comma(),
             Tokens.value("v4"), Tokens.colon(), Tokens.value(true), Tokens.comma(),
             Tokens.value("v5"), Tokens.colon(), Tokens.leftSquare(), Tokens.value(2), Tokens.rightSquare(),
-            Tokens.rightBrace()
+            Tokens.rightBrace(),
+            Tokens.EOF()
         );
         MatcherAssert.assertThat(tokens, Matchers.contains(expected.toArray()));
     }

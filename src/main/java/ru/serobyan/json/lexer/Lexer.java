@@ -11,62 +11,139 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import static java.lang.Character.*;
+import static java.lang.Character.*;;
 
 public class Lexer {
 
-    private InputStreamReader reader;
-    private final Deque<String> nexts = new LinkedList<>();
+    private final Deque<Token> nextTokens = new LinkedList<>();
+    private final InputStreamReader reader;
+
+    private Lexer(InputStreamReader reader) {
+        this.reader = reader;
+    }
 
     public static Lexer of(InputStream input) {
-        var lexer = new Lexer();
-        lexer.reader = new InputStreamReader(input, StandardCharsets.UTF_8);
-        return lexer;
+        return new Lexer(new InputStreamReader(input, StandardCharsets.UTF_8));
     }
 
     public Iterator<Token> lex() {
         return new Iterator<>() {
 
+            private int position = -1;
+            private boolean isDone = false;
+
             @Override
             @SneakyThrows
             public boolean hasNext() {
-                if (!nexts.isEmpty()) {
+                if (!nextTokens.isEmpty()) {
                     return true;
                 }
                 int intCh;
                 StringBuilder stringBuilder = null;
-                while ((intCh = reader.read()) != -1) {
-                    var ch = (char) intCh;
-                    if (ch == '{' || ch == '}' || ch == '[' || ch == ']' || ch == ':' || ch == ',') {
-                        if (stringBuilder != null) {
-                            nexts.add(stringBuilder.toString());
+                boolean isStringReading = false;
+                while (!isDone) {
+                    intCh = reader.read();
+                    if (intCh == -1) {
+                        isDone = true;
+                        if (isStringReading) {
+                            throw new RuntimeException(String.valueOf(position));
                         }
-                        nexts.add(String.valueOf(ch));
-                        return !nexts.isEmpty();
+                        nextTokens.add(Tokens.EOF());
+                        return !nextTokens.isEmpty();
+                    }
+                    position++;
+                    var ch = (char) intCh;
+                    if (isStringReading) {
+                        stringBuilder.append(ch);
+                        if (ch == '\n') {
+                            throw new RuntimeException(String.valueOf(position));
+                        }
+                        if (ch == '"') {
+                            nextTokens.add(parseToken(stringBuilder.toString()));
+                            isStringReading = false;
+                            stringBuilder = null;
+                            return !nextTokens.isEmpty();
+                        }
+                        continue;
                     }
                     if (ch == '"') {
-                        if (stringBuilder == null) {
-                            stringBuilder = new StringBuilder();
-                            stringBuilder.append(ch);
-                        } else {
-                            stringBuilder.append(ch);
-                            nexts.add(stringBuilder.toString());
-                            return !nexts.isEmpty();
-                        }
+                        isStringReading = true;
+                        stringBuilder = new StringBuilder();
+                        stringBuilder.append(ch);
+                        continue;
                     }
-                    if (ch == '.' || isLetter(ch) || isDigit(ch)) {
+                    if (ch == '-' || ch == '+' || ch == '.' || isLetter(ch) || isDigit(ch)) {
                         if (stringBuilder == null) {
                             stringBuilder = new StringBuilder();
                         }
                         stringBuilder.append(ch);
+                        continue;
+                    }
+                    if (ch == '{') {
+                        if (stringBuilder != null) {
+                            throw new RuntimeException(String.valueOf(position));
+                        }
+                        nextTokens.add(Tokens.leftBrace());
+                        return !nextTokens.isEmpty();
+                    }
+                    if (ch == '[') {
+                        if (stringBuilder != null) {
+                            throw new RuntimeException(String.valueOf(position));
+                        }
+                        nextTokens.add(Tokens.leftSquare());
+                        return !nextTokens.isEmpty();
+                    }
+                    if (ch == '}') {
+                        if (stringBuilder != null) {
+                            nextTokens.add(parseToken(stringBuilder.toString()));
+                            stringBuilder = null;
+                        }
+                        nextTokens.add(Tokens.rightBrace());
+                        return !nextTokens.isEmpty();
+                    }
+                    if (ch == ']') {
+                        if (stringBuilder != null) {
+                            nextTokens.add(parseToken(stringBuilder.toString()));
+                            stringBuilder = null;
+                        }
+                        nextTokens.add(Tokens.rightSquare());
+                        return !nextTokens.isEmpty();
+                    }
+                    if (ch == ':') {
+                        if (stringBuilder != null) {
+                            nextTokens.add(parseToken(stringBuilder.toString()));
+                            stringBuilder = null;
+                        }
+                        nextTokens.add(Tokens.colon());
+                        return !nextTokens.isEmpty();
+                    }
+                    if (ch == ',') {
+                        if (stringBuilder != null) {
+                            nextTokens.add(parseToken(stringBuilder.toString()));
+                            stringBuilder = null;
+                        }
+                        nextTokens.add(Tokens.comma());
+                        return !nextTokens.isEmpty();
+                    }
+                    if (isSpace(ch) && stringBuilder != null) {
+                        nextTokens.add(parseToken(stringBuilder.toString()));
+                        stringBuilder = null;
+                        return !nextTokens.isEmpty();
                     }
                 }
-                return false;
+                return !nextTokens.isEmpty();
             }
 
             @Override
             public Token next() {
-                var rawToken = nexts.removeFirst();
+                return nextTokens.removeFirst();
+            }
+
+            private boolean isSpace(char ch) {
+                return ch == ' ' || ch == '\r' || ch == '\n' || ch == '\t';
+            }
+
+            private Token parseToken(String rawToken) {
                 if (rawToken.startsWith("\"")) {
                     var string = rawToken.substring(1, rawToken.length() - 1);
                     return Tokens.value(string);

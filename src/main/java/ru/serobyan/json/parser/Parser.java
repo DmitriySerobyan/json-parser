@@ -6,12 +6,14 @@ import java.util.*;
 
 public class Parser {
 
-    private Iterator<Token> tokens;
+    private final Iterator<Token> tokens;
+
+    private Parser(Iterator<Token> tokens) {
+        this.tokens = tokens;
+    }
 
     public static Parser of(Iterator<Token> tokens) {
-        var parser = new Parser();
-        parser.tokens = tokens;
-        return parser;
+        return new Parser(tokens);
     }
 
     public Object parse() {

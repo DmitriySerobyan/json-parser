@@ -45,4 +45,8 @@ public class Tokens {
         return new Colon();
     }
 
+    public EOF EOF() {
+        return new EOF();
+    }
+
 }
