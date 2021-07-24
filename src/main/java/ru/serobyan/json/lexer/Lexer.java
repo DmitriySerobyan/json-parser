@@ -147,6 +147,14 @@ public class Lexer implements Iterator<Token> {
         return nextTokens.removeFirst();
     }
 
+    public Token peek() {
+        return nextTokens.peekFirst();
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
     private boolean isSpace(char ch) {
         return ch == ' ' || ch == '\r' || ch == '\n' || ch == '\t';
     }

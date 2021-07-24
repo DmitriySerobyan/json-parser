@@ -3,7 +3,6 @@ package ru.serobyan.json.lexer;
 import lombok.SneakyThrows;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -27,20 +26,20 @@ class ParserTest {
     private static Stream<Arguments> cases() {
         return Stream.of(
             Arguments.of(
-                "{\"v1\":1,\"v2\":\"test\"\"v3\":[1]}",
-                Map.of(
-                    "v1", 1,
-                    "v2", "test",
-                    "v3", List.of(1)
-                )
+                "1",
+                1
             ),
             Arguments.of(
                 "[1,2]",
                 List.of(1, 2)
             ),
             Arguments.of(
-                "1",
-                1
+                "{\"v1\":1,\"v2\":\"test\",\"v3\":[1]}",
+                Map.of(
+                    "v1", 1,
+                    "v2", "test",
+                    "v3", List.of(1)
+                )
             )
         );
     }
