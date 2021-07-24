@@ -52,6 +52,10 @@ public class Lexer implements Iterator<Token> {
                 if (isStringReading) {
                     throw new RuntimeException(String.valueOf(position));
                 }
+                if (stringBuilder != null) {
+                    nextTokens.add(parseToken(stringBuilder.toString()));
+                    stringBuilder = null;
+                }
                 nextTokens.add(Tokens.EOF());
                 return !nextTokens.isEmpty();
             }
