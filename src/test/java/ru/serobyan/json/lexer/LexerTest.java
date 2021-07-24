@@ -17,10 +17,10 @@ class LexerTest {
     @SneakyThrows
     public void lex() {
         var json = LexerTest.class.getClassLoader().getResourceAsStream("test.json");
-        var tokenIterator = new Lexer().lex(json);
+        var lexer = new Lexer(json);
         var tokens = new ArrayList<Token>();
-        while (tokenIterator.hasNext()) {
-            tokens.add(tokenIterator.next());
+        while (lexer.hasNext()) {
+            tokens.add(lexer.next());
         }
         var expected = List.of(
             Tokens.leftBrace(),
