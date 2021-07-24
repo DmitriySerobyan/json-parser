@@ -1,23 +1,36 @@
 package ru.serobyan.json.parser;
 
+import ru.serobyan.json.lexer.Lexer;
 import ru.serobyan.json.token.*;
 
-import java.util.*;
+import java.io.InputStream;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Parser {
 
-    private final Iterator<Token> tokens;
+    private final Lexer lexer;
 
-    private Parser(Iterator<Token> tokens) {
-        this.tokens = tokens;
+    public Parser(String str) {
+        this.lexer = new Lexer(str);
     }
 
-    public static Parser of(Iterator<Token> tokens) {
-        return new Parser(tokens);
+    public Parser(InputStream input) {
+        this.lexer = new Lexer(input);
+    }
+
+    public Parser(Reader reader) {
+        this.lexer = new Lexer(reader);
     }
 
     public Object parse() {
-        var firstToken = tokens.next();
+        if (!lexer.hasNext()) {
+            throw new RuntimeException();
+        }
+        var firstToken = lexer.next();
         if (firstToken instanceof LeftSquare) {
             return parseArray();
         }
@@ -32,8 +45,8 @@ public class Parser {
 
     List<Object> parseArray() {
         var result = new ArrayList<>();
-        while (tokens.hasNext()) {
-            var token = tokens.next();
+        while (lexer.hasNext()) {
+            var token = lexer.next();
             if (token instanceof RightSquare) {
                 return result;
             }
@@ -53,8 +66,8 @@ public class Parser {
     Map<String, Object> parseObject() {
         var result = new HashMap<String, Object>();
         String key = null;
-        while (tokens.hasNext()) {
-            var token = tokens.next();
+        while (lexer.hasNext()) {
+            var token = lexer.next();
             if (token instanceof RightBrace) {
                 return result;
             }
