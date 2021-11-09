@@ -1,6 +1,6 @@
 package ru.serobyan.json.token;
 
-public interface Value extends Token {
+public interface Primitive extends Token {
 
     Object getValue();
 

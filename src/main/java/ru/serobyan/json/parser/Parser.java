@@ -1,5 +1,7 @@
 package ru.serobyan.json.parser;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import ru.serobyan.json.lexer.Lexer;
 import ru.serobyan.json.token.*;
 
@@ -24,10 +26,16 @@ public class Parser {
     }
 
     public Object parse() {
+        var result = parseValue();
+        assertNextTokenIs(EOF.class);
+        return result;
+    }
+
+    private Object parseValue() {
         Object result = null;
-        assertNextTokenIs(Value.class, LeftSquare.class, LeftBrace.class);
+        assertNextTokenIs(Primitive.class, LeftSquare.class, LeftBrace.class);
         var firstToken = lexer.peek();
-        if (firstToken instanceof Value) {
+        if (firstToken instanceof Primitive) {
             result = parsePrimitive();
         }
         if (firstToken instanceof LeftSquare) {
@@ -36,87 +44,84 @@ public class Parser {
         if (firstToken instanceof LeftBrace) {
             result = parseObject();
         }
-        assertNextTokenIs(EOF.class);
         return result;
     }
 
-    Object parsePrimitive() {
-        assertNextTokenIs(Value.class);
+    private Object parsePrimitive() {
+        assertNextTokenIs(Primitive.class);
         var token = lexer.next();
-        return ((Value) token).getValue();
+        return ((Primitive) token).getValue();
     }
 
-    List<Object> parseArray() {
+    private List<Object> parseArray() {
         var result = new ArrayList<>();
         assertNextTokenIs(LeftSquare.class);
         lexer.next();
-        assertNextTokenIs(RightSquare.class, Value.class, LeftSquare.class, LeftBrace.class);
         while (lexer.hasNext()) {
-            assertNextTokenIs(RightSquare.class, Comma.class, Value.class, LeftSquare.class, LeftBrace.class);
             var nextToken = lexer.peek();
+            if (nextToken instanceof RightSquare) {
+                lexer.next();
+                return result;
+            }
+            var value = parseValue();
+            result.add(value);
+            if (!lexer.hasNext()) {
+                throw new RuntimeException(String.valueOf(lexer.getPosition()));
+            }
+            nextToken = lexer.peek();
             if (nextToken instanceof Comma) {
                 lexer.next();
+                assertNextTokenIs(Primitive.class, LeftSquare.class, LeftBrace.class);
                 continue;
             }
             if (nextToken instanceof RightSquare) {
                 lexer.next();
                 return result;
             }
-            if (nextToken instanceof Value) {
-                result.add(parsePrimitive());
-            }
-            if (nextToken instanceof LeftSquare) {
-                result.add(parseArray());
-            }
-            if (nextToken instanceof LeftBrace) {
-                result.add(parseObject());
-            }
-            assertNextTokenIs(Comma.class, RightSquare.class);
+            throw new RuntimeException(String.valueOf(lexer.getPosition()));
         }
         throw new RuntimeException(String.valueOf(lexer.getPosition()));
     }
 
-    Map<String, Object> parseObject() {
+    private Map<String, Object> parseObject() {
         var result = new HashMap<String, Object>();
         assertNextTokenIs(LeftBrace.class);
         lexer.next();
-        String key = null;
-        assertNextTokenIs(Value.class, RightBrace.class);
         while (lexer.hasNext()) {
             var nextToken = lexer.peek();
+            if (nextToken instanceof RightBrace) {
+                lexer.next();
+                return result;
+            }
+            var pair = parsePair();
+            result.put(pair.getKey(), pair.getValue());
+            if (!lexer.hasNext()) {
+                throw new RuntimeException(String.valueOf(lexer.getPosition()));
+            }
+            nextToken = lexer.peek();
             if (nextToken instanceof Comma) {
                 lexer.next();
+                assertNextTokenIs(Primitive.class);
                 continue;
             }
             if (nextToken instanceof RightBrace) {
                 lexer.next();
                 return result;
             }
-            if (key == null) {
-                key = (String) parsePrimitive();
-                assertNextTokenIs(Colon.class);
-                lexer.next();
-                continue;
-            } else {
-                assertNextTokenIs(Value.class, LeftSquare.class, LeftBrace.class);
-                nextToken = lexer.peek();
-                if (nextToken instanceof Value) {
-                    result.put(key, parsePrimitive());
-                }
-                if (nextToken instanceof LeftSquare) {
-                    result.put(key, parseArray());
-                }
-                if (nextToken instanceof LeftBrace) {
-                    result.put(key, parseObject());
-                }
-                key = null;
-                assertNextTokenIs(Comma.class, RightBrace.class);
-            }
+            throw new RuntimeException(String.valueOf(lexer.getPosition()));
         }
         throw new RuntimeException(String.valueOf(lexer.getPosition()));
     }
 
-    void assertNextTokenIs(Class<?>... assertTokenTypes) {
+    private Pair parsePair() {
+        var key = (String) parsePrimitive();
+        assertNextTokenIs(Colon.class);
+        lexer.next();
+        var value = parseValue();
+        return new Pair(key, value);
+    }
+
+    private void assertNextTokenIs(Class<?>... assertTokenTypes) {
         if (!lexer.hasNext()) {
             throw new RuntimeException(String.valueOf(lexer.getPosition()));
         }
@@ -127,6 +132,13 @@ public class Parser {
             }
         }
         throw new RuntimeException(String.valueOf(lexer.getPosition()));
+    }
+
+    @Data
+    @AllArgsConstructor
+    private static class Pair {
+        private String key;
+        private Object value;
     }
 
 }

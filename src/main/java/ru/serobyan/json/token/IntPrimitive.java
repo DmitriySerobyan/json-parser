@@ -1,9 +1,9 @@
 package ru.serobyan.json.token;
 
 @lombok.Value
-public class DoubleValue implements Value {
+public class IntPrimitive implements Primitive {
 
-    double value;
+    int value;
 
     @Override
     public Object getValue() {

@@ -5,20 +5,20 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class Tokens {
 
-    public StringValue value(String value) {
-        return new StringValue(value);
+    public StringPrimitive value(String value) {
+        return new StringPrimitive(value);
     }
 
-    public IntValue value(int value) {
-        return new IntValue(value);
+    public IntPrimitive value(int value) {
+        return new IntPrimitive(value);
     }
 
-    public DoubleValue value(double value) {
-        return new DoubleValue(value);
+    public DoublePrimitive value(double value) {
+        return new DoublePrimitive(value);
     }
 
-    public BoolValue value(boolean value) {
-        return new BoolValue(value);
+    public BoolPrimitive value(boolean value) {
+        return new BoolPrimitive(value);
     }
 
     public RightSquare rightSquare() {

@@ -1,9 +1,9 @@
 package ru.serobyan.json.token;
 
 @lombok.Value
-public class StringValue implements Value {
+public class BoolPrimitive implements Primitive {
 
-    String value;
+    boolean value;
 
     @Override
     public Object getValue() {
@@ -12,7 +12,7 @@ public class StringValue implements Value {
 
     @Override
     public String toString() {
-        return "\"" + value + "\"";
+        return "" + value;
     }
 
 }
